@@ -1,17 +1,18 @@
 EMACS ?= emacs
+SANDBOX_DIR ?= ./sandbox
 
-cask:
-	EMACS=$(EMACS) cask --verbose --debug
-	EMACS=$(EMACS) cask update --verbose --debug
+deps:
+	@mkdir -p "$(SANDBOX_DIR)"
+	./makem.sh -vv -S "$(SANDBOX_DIR)" --install-deps --install-linters
 
 test:
 	@echo "Using $(shell which $(EMACS))..."
-	cask exec buttercup -L .
+	./makem.sh -vv -S "$(SANDBOX_DIR)" test
 
-compile:
-	cask exec $(EMACS) -batch -Q --eval '(byte-compile-file "general.el")'
+lint:
+	./makem.sh -vv -S "$(SANDBOX_DIR)" lint
 
 clean:
-	rm -f *.elc
+	rm -f -- *.elc **/*.elc *-autoloads.el **/*-autoloads.el *\~ **/*\~
 
-.PHONY: cask test clean
+.PHONY: deps test lint clean
